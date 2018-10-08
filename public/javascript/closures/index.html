@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>JavaScript Closures Demystified</title>
+  <meta property="og:title" content="JavaScript Closures Demystified" />
+  <meta name="twitter:title" content="JavaScript Closures Demystified" />
+  <meta name="description" content="Kyle Simpson, writer of the series “You Don’t Know JS”, said the following — “understanding closures is like when Neo sees the Matrix for the first time”. If you don’t understand the reference please come back after you’ve watched The Matrix (1999). I admit this concept took me a while to grasp and for a long time I walked around with inaccurate beliefs about what a closure really was!">
+  <meta property="og:description" content="Kyle Simpson, writer of the series “You Don’t Know JS”, said the following — “understanding closures is like when Neo sees the Matrix for the first time”. If you don’t understand the reference please come back after you’ve watched The Matrix (1999). I admit this concept took me a while to grasp and for a long time I walked around with inaccurate beliefs about what a closure really was!">
+  <meta name="twitter:description" content="Kyle Simpson, writer of the series “You Don’t Know JS”, said the following — “understanding closures is like when Neo sees the Matrix for the first time”. If you don’t understand the reference please …">
+  <meta name="author" content=""/>
+  <meta name="twitter:card" content="summary" />
+  <meta property="og:url" content="https://www.pushingthestack.com/javascript/closures/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Pushing the Stack" />
+
+  <meta name="generator" content="Hugo 0.49" />
+  <link rel="canonical" href="https://www.pushingthestack.com/javascript/closures/" />
+  <link rel="alternate" href="https://www.pushingthestack.com/index.xml" type="application/rss+xml" title="Pushing the Stack">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://www.pushingthestack.com/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" /><link rel="stylesheet" href="https://www.pushingthestack.com/css/syntax.css" /><link rel="stylesheet" href="https://www.pushingthestack.com/css/codeblock.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css" integrity="sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css" integrity="sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R" crossorigin="anonymous">
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-127162666-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="https://www.pushingthestack.com/">Pushing the Stack</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+        
+          
+            <li>
+              <a title="JavaScript" href="/javascript/">JavaScript</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="Devops" href="/devops/">Devops</a>
+            </li>
+          
+        
+
+        
+
+        
+      </ul>
+    </div>
+
+    
+
+  </div>
+</nav>
+
+
+
+
+    
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+
+  
+  
+  
+
+
+
+
+
+
+  
+
+  <header class="header-section ">
+    
+    <div class="intro-header no-img">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="post-heading">
+              
+                <h1>JavaScript Closures Demystified</h1>
+              
+              
+              
+              
+                <span class="post-meta">
+  
+  
+  <i class="fa fa-calendar-o"></i>&nbsp;Posted on November 30, 2017
+  
+  
+  
+</span>
+
+
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+    
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+        <p>Kyle Simpson, writer of the series “You Don’t Know JS”, said the following — “understanding closures is like when Neo sees the Matrix for the first time”. If you don’t understand the reference please come back after you’ve watched The Matrix (1999). I admit this concept took me a while to grasp and for a long time I walked around with inaccurate beliefs about what a closure really was!</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/0*M5VWy0aC-n1fuc-S." alt="" /></p>
+
+<p>Wikipedia has the following definition for closure:</p>
+
+<p><i>In programming languages, <strong>closures</strong> (also <strong>lexical closures</strong> or <strong>function closures</strong>) are techniques for implementing lexically scoped name binding in languages with first-class functions. Operationally, a closure is a record storing a function together with an environment: a mapping associating each free variable of the function (variables that are used locally, but defined in an enclosing scope) with the value or reference to which the name was bound when the closure was created. A closure — unlike a plain function — allows the function to access those captured variables through the closure’s copies of their values or references, even when the function is invoked outside their scope.</i></p>
+
+<p>Now there’s a mouthful! Since I think this is actually a pretty great definition for a closure, let’s break it down.</p>
+
+<p><strong><em>In programming languages, closures (also lexical closures or function closures) are techniques for implementing lexically scoped name binding in languages with first-class functions.</em></strong></p>
+
+<p>Two bombs get dropped in this sentence — first-class functions and lexical scoping. A language has <strong>first-class functions</strong> if it allows functions to have behavior that is similar to other entities (i.e. an integer) — this typically means that functions can be passed as an argument, returned from a function, modified, and assigned. Have you ever played with JavaScript code that looks like this?
+<br/>
+<br/></p>
+
+<pre><code>_.partial = function(func) {
+    var boundArgs = slice.call(arguments, 1);
+    var bound = function() {
+      var position = 0, length = boundArgs.length;
+      var args = Array(length);
+      for (var i = 0; i &lt; length; i++) {
+        args[i] = boundArgs[i] === _ ? arguments[position++] :    boundArgs[i];
+      }
+      while (position &lt; arguments.length) args.push(arguments[position++]);
+      return executeBound(func, bound, this, this, args);
+    };
+    return bound;
+  };
+</code></pre>
+
+<p><br/>
+This example might be a bit complex, but the reason I chose it is because it’s the source of a popular utility function _.partial from a very popular JavaScript library <strong>Underscore.js</strong>. This is a great example of what you can do with <strong>first-class functions</strong> — a function is being passed as an argument to a function which is also returning a function!</p>
+
+<p>The term “lexical” in <strong>lexical scope</strong> has an English definition (<em>relating to the words or vocabulary of the language</em>) but it makes more sense to think in terms of a compiler. The first step of a standard language compiler is called <strong>lexing</strong> in which source code is parsed and assigned a semantic meaning. <strong>Lexical scope</strong> is scope that is defined by the JavaScript compiler at lexing time. In simpler terms, lexical scope refers to the scope that you (the programmer) create as you “physically” write code. This usually manifests as blocks of code (and sometimes indentations) that can be obvious from simply reading the code.
+<br/>
+<br/></p>
+
+<pre><code>function outerScope(a) {
+    var b = a / 2;
+    function innerScope(c) {
+        console.log(a, b, c);
+    }
+    innerScope(b/2);
+}
+outerScope(4); // 4, 2, 1
+</code></pre>
+
+<p><br/>
+Here there are three levels of <strong>lexical scope</strong> — the global scope (which contains outerScope()), the scope created within outerScope (which contains innerScope) and the scope created by innerScope. The key here is that <strong>lexical scope</strong> can be derived from reading the source code, which in this case is clearly presented by the nested functions. This is in contrast to <strong>dynamic scope</strong> which depend on how the code is executing (note: the <em>this</em> keyword in JavaScript has dynamic scoping determined by execution context). Lexical scope means that when we execute innerScope(), it is also able to access it’s surrounding environment (i.e. a, b and c).</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/0*Ou5iLB6K2vV_vcaj.png" alt="" /></p>
+
+<p><center><i>A closure is a combination of a function and the lexical environment within which that function is called” — MDN web docs</i></center></p>
+
+<p>So now, armed with our newfound knowledge, we can summarize the first sentence of Wikipedia’s closure definition as — “*In programming languages which treat functions as a first-class citizen, closures allow functions to be invoked with a complete memory of it’s original lexical environment*”. This is pretty much summed up by Wikipedia’s second and third sentence:
+&gt; <strong><em>Operationally, a closure is a record storing a function together with an environment: a mapping associating each free variable of the function (variables that are used locally, but defined in an enclosing scope) with the value or reference to which the name was bound when the closure was created. A closure — unlike a plain function — allows the function to access those captured variables through the closure’s copies of their values or references, even when the function is invoked outside their scope.</em></strong></p>
+
+<p>Here’s an example of a closure that demonstrates how variables are mapped:
+<br/>
+<br/></p>
+
+<pre><code>var counter = (function() {
+    var count = 0;
+    function increment() {
+        count += 1;
+    }
+    return {
+        increment: function() {
+            increment(1);
+        },
+        getValue: function() {
+            return count;
+        }
+    }
+})();
+
+console.log(counter.getValue()); // 0
+counter.increment();
+console.log(counter.getValue()); // 1
+counter.increment();
+console.log(counter.getValue()); // 2
+counter.increment();
+console.log(counter.getValue()); // 3
+</code></pre>
+
+<p><br/>
+Here we are calling counter.getValue() and counter.increment() which both retain a reference to the count variable, even though we’re calling these functions from the global scope which doesn’t have a reference to count! This is a great example of how we would use closures to make private variables or hide implementation details. The closure is mapped to the lexical environment that is created by the body of the anonymous function, which allows count to remain reference to counter.</p>
+
+<p>Here’s another interesting example of what a closure can accomplish:
+<br/>
+<br/></p>
+
+<pre><code>for (var i = 0; i &lt;= 5; i++) {
+    setTimeout(function timer() {
+        console.log(i);
+    }, i * 1000);
+}
+
+// 6
+// 6
+// 6
+// 6
+// 6
+</code></pre>
+
+<p><br/>
+Psych!! There’s actually no (meaningful) closure here. it may look like setTimeout is retaining a reference to the variable i but in reality i is actually being assigned to the global scope where it is being referenced by the console.log statement. Here’s how we could actually make this work as intended (even with the setTimeout!):
+<br/>
+<br/></p>
+
+<pre><code>for (var i = 1; i &lt;= 5; i++) {
+    (function() {
+        var j = i;
+        setTimeout(function timer() {
+            console.log(j);
+        }, j * 1000);
+    })();
+}
+
+// 1
+// 2
+// 3
+// 4
+// 5
+</code></pre>
+
+<p><br/>
+This time we’re actually using an anonymous function (or IIFE — immediately invoked function expression) to create a closure in which we’re assigning a variable j which is equal to i at the time of invocation. Each new variable j is then mapped to a new closure along with its own setTimeout function. The really cool thing here is that even though the IIFE function is long-gone by the time the setTimeout function runs, the variable j is still in play!</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/0*1t2amWglPugvtyLx.jpg" alt="" /></p>
+
+<p>Hopefully this post starts to clear up some of the mystery around closures. Closures are a major part of functional programming that help with the creation of function factories, name-spacing, complexity management, abstraction and much more!</p>
+
+<p>Comment on <a href="https://medium.com/front-end-hacking/javascript-closures-54edf12606c4">Medium</a></p>
+
+
+        
+
+        
+      </article>
+
+      
+        <ul class="pager blog-pager">
+          
+            <li class="previous">
+              <a href="https://www.pushingthestack.com/javascript/eslint/" data-toggle="tooltip" data-placement="top" title="Instantly become a better developer with ESLint">&larr; Previous Post</a>
+            </li>
+          
+          
+            <li class="next">
+              <a href="https://www.pushingthestack.com/javascript/react-redux-5-lessons-learned/" data-toggle="tooltip" data-placement="top" title="5 Lessons Learned Migrating To React/Redux">Next Post &rarr;</a>
+            </li>
+          
+        </ul>
+      
+
+
+      
+
+    </div>
+  </div>
+</div>
+
+    <footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+          
+        </ul>
+        <p class="credits copyright text-muted">
+          
+
+          &nbsp;&bull;&nbsp;
+          2018
+
+          
+            &nbsp;&bull;&nbsp;
+            <a href="https://www.pushingthestack.com/">Pushing the Stack</a>
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js" integrity="sha384-/y1Nn9+QQAipbNQWU65krzJralCnuOasHncUFXGkdwntGeSvQicrYkiUBwsgUqc1" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/contrib/auto-render.min.js" integrity="sha384-dq1/gEHSxPZQ7DdrM82ID4YVol9BYyU7GbWlIwnwyPzotpoc57wDw/guX8EaYGPx" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://www.pushingthestack.com/js/main.js"></script><script> renderMathInElement(document.body); </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script>
+<script src="https://www.pushingthestack.com/js/load-photoswipe.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
+

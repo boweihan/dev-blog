@@ -1,6 +1,7 @@
-baseURL = "http://example.org/"
+baseURL = "https://www.pushingthestack.com/"
+googleAnalytics = "UA-127162666-1"
 languageCode = "en-us"
-title = "Journey to the Full Stack Dream"
+title = "Pushing the Stack"
 theme = "beautifulhugo"
 pygmentsCodeFences = true
 pygmentsUseClasses = true
