@@ -1,3 +1,22 @@
 baseURL = "http://example.org/"
 languageCode = "en-us"
-title = "My New Hugo Site"
+title = "Journey to the Full Stack Dream"
+theme = "beautifulhugo"
+pygmentsCodeFences = true
+pygmentsUseClasses = true
+summaryLength = 50
+pluralizelisttitles = false
+
+[menu]
+  [[menu.main]]
+    identifier = "javascript"
+    name = "JavaScript"
+    pre = "<i class='fa fa-bolt'></i>"
+    url = "/javascript/"
+    weight = -110
+  [[menu.main]]
+    identifier = "devops"
+    name = "Devops"
+    pre = "<i class='fa fa-road'></i>"
+    url = "/devops/"
+    weight = -100
