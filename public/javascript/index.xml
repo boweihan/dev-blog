@@ -6,10 +6,19 @@
     <description>Recent content in Javascript on Pushing the Stack</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 15 Jul 2018 21:53:48 -0400</lastBuildDate>
+    <lastBuildDate>Wed, 17 Oct 2018 13:18:48 -0500</lastBuildDate>
     
 	<atom:link href="https://www.pushingthestack.com/javascript/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Optimizing React Rendering</title>
+      <link>https://www.pushingthestack.com/javascript/rendering/</link>
+      <pubDate>Wed, 17 Oct 2018 13:18:48 -0500</pubDate>
+      
+      <guid>https://www.pushingthestack.com/javascript/rendering/</guid>
+      <description>Avoiding Avoidable Component Re-renders  Over the last few weeks I spent some time making performance improvements to a data-reporting front-end we build and maintain at Vena Solutions. The application is built entirely in React and has grown to the point where we are starting to notice sluggish performance in certain views and features — especially those tasked with rendering many sub-components (lists and trees).</description>
+    </item>
     
     <item>
       <title>5 Lessons Learned Migrating To React/Redux</title>

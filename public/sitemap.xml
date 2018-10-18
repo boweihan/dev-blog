@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://www.pushingthestack.com/javascript/rendering/</loc>
+    <lastmod>2018-10-17T13:18:48-05:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://www.pushingthestack.com/javascript/react-redux-5-lessons-learned/</loc>
     <lastmod>2018-07-15T21:53:48-04:00</lastmod>
   </url>
@@ -45,13 +50,13 @@
   
   <url>
     <loc>https://www.pushingthestack.com/javascript/</loc>
-    <lastmod>2018-07-15T21:53:48-04:00</lastmod>
+    <lastmod>2018-10-17T13:18:48-05:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://www.pushingthestack.com/</loc>
-    <lastmod>2018-07-15T21:53:48-04:00</lastmod>
+    <lastmod>2018-10-17T13:18:48-05:00</lastmod>
     <priority>0</priority>
   </url>
   
