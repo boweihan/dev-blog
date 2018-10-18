@@ -1,5 +1,5 @@
 ---
-title: "Optimizing React Rendering"
+title: "Optimizing React Performance with Selective Rendering"
 date: 2018-10-17T13:18:48-05:00
 draft: false
 type: "post"
