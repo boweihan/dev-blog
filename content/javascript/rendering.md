@@ -114,7 +114,7 @@ That’s a 328x improvement! ShouldComponentUpdate makes these optimizations pos
 
 ## There’s more…
 
-The three performance areas covered in this post — _keys, PureComponent, and ComponentShouldUpdate_ — are just the tip on the iceberg of potential performance improvements. We are conceptually solving caching problems and there are a few other potential areas for render optimizations that come to mind:
+The three performance areas covered in this post — _keys, PureComponent, and ShouldComponentUpdate_ — are just the tip on the iceberg of potential performance improvements. We are conceptually solving caching problems and there are a few other potential areas for render optimizations that come to mind:
 
 * Using [recompose](https://github.com/acdlite/recompose) to add selective rendering behaviour to your functional components.
 
