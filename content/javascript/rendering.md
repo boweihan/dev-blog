@@ -8,7 +8,7 @@ type: "post"
 <h1 style="color: darkgray">Avoiding Avoidable Component Re-renders</h1>
 
 <br/>
-Over the last few weeks I spent some time making performance improvements to a data-reporting front-end we build and maintain at [Vena Solutions](https://venasolutions.com/). The application is built entirely in React and has grown to the point where we are starting to notice sluggish performance in certain views and features — especially those tasked with rendering many sub-components (lists and trees). It turns out that most of our issues were the result of sub-optimal key usage and avoidable component re-rendering.
+My team recently spent some time making performance improvements to a data-reporting front-end we build and maintain at [Vena Solutions](https://venasolutions.com/). The application is built entirely in React and has grown to the point where we are starting to notice sluggish performance in certain views and features — especially those tasked with rendering many sub-components (lists and trees). It turns out that most of our issues were the result of sub-optimal key usage and avoidable component re-rendering.
 
 This article highlights some of the optimizations that we applied to reduce avoidable re-renders in our application.
 
