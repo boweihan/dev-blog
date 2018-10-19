@@ -14,7 +14,7 @@ This article highlights some of the optimizations that we applied to reduce avoi
 
 <br/>
 
-## **Optimization #1 — Don’t Abuse Keys!**
+## **Pre-Optimization — Don’t Abuse Keys!**
 
 > # Keys can turn your application into a rendering jackhammer.
 
@@ -28,11 +28,11 @@ There is a time and a place to use keys (e.g. when dealing with lists) but it is
 
 ![The List isn’t rendering for some reason so let’s just force re-rendering with a key. Everything is awesome.](https://cdn-images-1.medium.com/max/4464/1*aXmvm_ytbP06V52i6gFVRw.png)<center>_The List isn’t rendering for some reason so let’s just force re-rendering with a key. Everything is awesome._</center>
 
-As you may have realized, this particular pattern gave us serious performance headaches. The key prop makes further render optimizations impossible because it causes React to discard the entire component instance and DOM subtree every time the value of the key changes. This is not exactly a standalone optimization if you are already using keys for their intended purpose (in collections) but in the cases where we misused keys on non-iterated components we were able to realize performance improvements by removing them altogether and fixing the root cause (usually due to data mutations - I'll leave it at that!).
+The key prop causes React to discard the entire component instance and DOM subtree every time the value of the key changes. Removing instances of misused keys is a necessary pre-optimization because it makes it very hard to apply any further optimizations.
 
 <br/>
 
-## **Optimization #2 — Use PureComponent**
+## **Optimization — Use PureComponent**
 
 > # Use PureComponent when you have performance issues and have determined that a specific component was re-rendering too often, but its props and/or state are shallowly equal— Dan Abramov
 
@@ -72,11 +72,11 @@ Thankfully, we have options.
 
 <br/>
 
-## **Optimization #3 — ShouldComponentUpdate**
+## **Optimization — ShouldComponentUpdate**
 
 > # I’d just like to take a moment and thank #react for #shouldComponentUpdate ❤ — some person on twitter
 
-**ShouldComponentUpdate** is a React component lifecycle method that determines whether or not a component should continue its render lifecycle. The method is called right before render. (Diagram below is straight from React docs).
+**ShouldComponentUpdate** is a React component lifecycle method that determines whether or not a component should continue its render lifecycle. The method is called right before render. (You can find it in the Updating block on the React LifeCycle Cheat Sheet).
 
 ![React LifeCycle Cheat Sheet](https://cdn-images-1.medium.com/max/3668/1*gMdgkSygxwy9mlJCFyphBg.png)<center>_React LifeCycle Cheat Sheet_</center>
 
