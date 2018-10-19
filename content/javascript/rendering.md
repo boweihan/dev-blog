@@ -28,7 +28,7 @@ There is a time and a place to use keys (e.g. when dealing with lists) but it is
 
 ![The List isn’t rendering for some reason so let’s just force re-rendering with a key. Everything is awesome.](https://cdn-images-1.medium.com/max/4464/1*aXmvm_ytbP06V52i6gFVRw.png)<center>_The List isn’t rendering for some reason so let’s just force re-rendering with a key. Everything is awesome._</center>
 
-As you may have realized, this particular pattern gave us serious performance headaches. The key prop makes further render optimizations impossible because it causes React to discard the entire component instance and DOM subtree every time the value of the key changes.
+As you may have realized, this particular pattern gave us serious performance headaches. The key prop makes further render optimizations impossible because it causes React to discard the entire component instance and DOM subtree every time the value of the key changes. This is not exactly a standalone optimization if you are already using keys for their intended purpose (in collections) but in the cases where we misused keys on non-iterated components we were able to realize performance improvements by removing them altogether and fixing the root cause (usually due to data mutations - I'll leave it at that!).
 
 <br/>
 
