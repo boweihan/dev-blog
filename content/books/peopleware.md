@@ -1,6 +1,6 @@
 ---
 title: "Peopleware - Book Takeaways"
-date: 2019-1-12T21:53:48-04:00
+date: 2019-01-12T21:53:48-04:00
 draft: false
 type: "post"
 ---
