@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pushing the Stack</title>
+    <link>https://www.pushingthestack.com/</link>
+    <description>Recent content on Pushing the Stack</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 17 Oct 2018 13:18:48 -0500</lastBuildDate>
+    
+	<atom:link href="https://www.pushingthestack.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Optimizing React Rendering</title>
+      <link>https://www.pushingthestack.com/javascript/rendering/</link>
+      <pubDate>Wed, 17 Oct 2018 13:18:48 -0500</pubDate>
+      
+      <guid>https://www.pushingthestack.com/javascript/rendering/</guid>
+      <description>Avoiding Avoidable Component Re-renders  Over the last few weeks I spent some time making performance improvements to a data-reporting front-end we build and maintain at Vena Solutions. The application is built entirely in React and has grown to the point where we are starting to notice sluggish performance in certain views and features — especially those tasked with rendering many sub-components (lists and trees).</description>
+    </item>
+    
+    <item>
+      <title>5 Lessons Learned Migrating To React/Redux</title>
+      <link>https://www.pushingthestack.com/javascript/react-redux-5-lessons-learned/</link>
+      <pubDate>Sun, 15 Jul 2018 21:53:48 -0400</pubDate>
+      
+      <guid>https://www.pushingthestack.com/javascript/react-redux-5-lessons-learned/</guid>
+      <description>Over the last few months at work our team had the opportunity to give some love to one of our core codebases — a JavaScript add-in (henceforth known as the JSAddin) embedded in Office365. The project was built under tight time constraints and quickly became a pain to extend and maintain.</description>
+    </item>
+    
+    <item>
+      <title>An Introduction to Serverless and FaaS (Functions as a Service)</title>
+      <link>https://www.pushingthestack.com/devops/faas/</link>
+      <pubDate>Fri, 15 Dec 2017 21:53:48 -0400</pubDate>
+      
+      <guid>https://www.pushingthestack.com/devops/faas/</guid>
+      <description>When was the last time you had your mind blown? For me, it was last Friday. I attended a local conference (shoutouts to Functions17!) that hosted some outstanding speakers from innovative companies such as Amazon, Google, Pivotal, and Microsoft…for the sole purpose of introducing and discussing innovations for a new software architecture known as FaaS, or Functions as a Service.</description>
+    </item>
+    
+    <item>
+      <title>JavaScript Closures Demystified</title>
+      <link>https://www.pushingthestack.com/javascript/closures/</link>
+      <pubDate>Thu, 30 Nov 2017 21:53:48 -0400</pubDate>
+      
+      <guid>https://www.pushingthestack.com/javascript/closures/</guid>
+      <description>Kyle Simpson, writer of the series “You Don’t Know JS”, said the following — “understanding closures is like when Neo sees the Matrix for the first time”. If you don’t understand the reference please come back after you’ve watched The Matrix (1999). I admit this concept took me a while to grasp and for a long time I walked around with inaccurate beliefs about what a closure really was!</description>
+    </item>
+    
+    <item>
+      <title>Instantly become a better developer with ESLint</title>
+      <link>https://www.pushingthestack.com/javascript/eslint/</link>
+      <pubDate>Sun, 05 Nov 2017 21:53:48 -0400</pubDate>
+      
+      <guid>https://www.pushingthestack.com/javascript/eslint/</guid>
+      <description>I spent a few months writing JavaScript code without a linter. Back then, it felt normal to deal with run-time errors by checking the browser console — messages containing…  
+Uncaught SyntaxError: Unexpected token   …were a normal part of my development process. My code was full of poor practices (even when it worked!</description>
+    </item>
+    
+    <item>
+      <title>Unit Testing AMD Modules with Karma, Mocha and RequireJS</title>
+      <link>https://www.pushingthestack.com/javascript/karma-unit-testing/</link>
+      <pubDate>Sat, 04 Feb 2017 21:53:48 -0400</pubDate>
+      
+      <guid>https://www.pushingthestack.com/javascript/karma-unit-testing/</guid>
+      <description>As the complexity of a web application increases, manual testing of front-end functionality can no longer provide a reasonable level of confidence. Time that used to be spent developing new features is now spent fixing an increasing number of regression issues…
+My company, like many others, is striving for daily deployments.</description>
+    </item>
+    
+    <item>
+      <title>SSO, SAML and SLO</title>
+      <link>https://www.pushingthestack.com/devops/sso-saml/</link>
+      <pubDate>Sun, 25 Dec 2016 21:53:48 -0400</pubDate>
+      
+      <guid>https://www.pushingthestack.com/devops/sso-saml/</guid>
+      <description>Let’s talk about Single Sign-On (SSO), Security Assertion Markup Language (SAML) and Single Logout (SLO).
+ What is Single Sign-On?
+Have you ever thought it would be nice to have one credential to all of your online accounts? Welcome to the world of Single Sign-On!
+SSO is a process that allows users to authenticate into multiple services after logging into a primary service.</description>
+    </item>
+    
+  </channel>
+</rss>

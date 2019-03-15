@@ -1,0 +1,34 @@
+<p>The following are two code samples using syntax highlighting.</p>
+
+<!--more-->
+
+<p>The following is a code sample using triple backticks ( ``` ) code fencing provided in Hugo. This is client side highlighting and does not require any special installation.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code>    <span class="kd">var</span> <span class="nx">num1</span><span class="p">,</span> <span class="nx">num2</span><span class="p">,</span> <span class="nx">sum</span>
+    <span class="nx">num1</span> <span class="o">=</span> <span class="nx">prompt</span><span class="p">(</span><span class="s2">"Enter first number"</span><span class="p">)</span>
+    <span class="nx">num2</span> <span class="o">=</span> <span class="nx">prompt</span><span class="p">(</span><span class="s2">"Enter second number"</span><span class="p">)</span>
+    <span class="nx">sum</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">num1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">num2</span><span class="p">)</span> <span class="c1">// "+" means "add"</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s2">"Sum = "</span> <span class="o">+</span> <span class="nx">sum</span><span class="p">)</span>  <span class="c1">// "+" means combine into a string</span>
+</code></pre>
+</div>
+
+<p>The following is a code sample using the “highlight” shortcode provided in Hugo. This is server side highlighting and requires Python and Pygments to be installed.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var num1, num2, sum
+num1 = prompt("Enter first number")
+num2 = prompt("Enter second number")
+sum = parseInt(num1) + parseInt(num2) // "+" means "add"
+alert("Sum = " + sum)  // "+" means combine into a string
+</code></pre>
+</div>
+
+<p>And here is the same code with line numbers:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var num1, num2, sum
+num1 = prompt("Enter first number")
+num2 = prompt("Enter second number")
+sum = parseInt(num1) + parseInt(num2) // "+" means "add"
+alert("Sum = " + sum)  // "+" means combine into a string
+</code></pre>
+</div>
+

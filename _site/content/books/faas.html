@@ -1,0 +1,224 @@
+<p>When was the last time you had your mind blown? For me, it was last Friday. I attended a local conference (shoutouts to Functions17!) that hosted some outstanding speakers from innovative companies such as Amazon, Google, Pivotal, and Microsoft…for the sole purpose of introducing and discussing innovations for a new software architecture known as FaaS, or Functions as a Service.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/0*E262CkJzKmU1u4EB.jpg" alt="" /></p>
+
+<p><br />
+<strong>Serverless Computing</strong></p>
+
+<p>Before we get into what FaaS is, it’s important to understand another term — <strong>serverless computing</strong>. Serverless computing is a cloud computing model which aims to abstract server management and low-level infrastructure decisions away from developers. In this model, allocation of resources is managed by the cloud provider instead of the application architect, which can bring some serious benefits. In other words, serverless aims to do exactly what it sounds like — allow applications to be developed without concerns for implementing, tweaking, or scaling a server (at least, to the perspective of a user).</p>
+
+<p><br />
+<strong>Functions as a Service</strong></p>
+
+<p><strong>FaaS</strong> is a relatively new concept that was first made available in 2014 by hook.io and is now implemented in services such as AWS Lambda, Google Cloud Functions, IBM OpenWhisk and Microsoft Azure Functions. It provides a means to achieve the serverless dream allowing developers to execute code in response to events without building out or maintaining a complex infrastructure. What this means is that you can simply upload modular chunks of functionality into the cloud that are executed independently. Imagine the possibilities! Instead of scaling a monolithic REST server to handle potential load, you can now split the server into a bunch of functions which can be scaled automatically and independently. If you’re familiar with microservices, this image might make you feel something (credits to Luke Angel(1)).</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/0*Yv6sMLN_7lFjdH3I.png" alt="" /></p>
+
+<p>As an illustration, here’s all the code you would need to deploy a fully scalable and useable function to the cloud.
+<br />
+<br /></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>/**
+ * HTTP Cloud Function.
+ *
+ * @param {Object} req Cloud Function request context.
+ * @param {Object} res Cloud Function response context.
+ */
+exports.helloHttp = function helloHttp (req, res) {
+  res.send(`Hello ${req.body.name || 'World'}!`);
+};
+</code></pre>
+</div>
+
+<p><br />
+This is a simple HTTP request written in NodeJS that displays “Hello World” or “Hello (name)” if you pass in a parameter. This example is borrowed from Google Cloud which provides some useful features such as type safety (via @param).</p>
+
+<p>Here’s another snippet that is a little more involved. Can you guess what it does?
+<br />
+<br /></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>/**
+ * Background Cloud Function to be triggered by Cloud Storage.
+ *
+ * @param {object} event The Cloud Functions event.
+ * @param {function} callback The callback function.
+ */
+exports.helloGCS = function (event, callback) {
+  const file = event.data;
+
+  if (file.resourceState === 'not_exists') {
+    console.log(`File ${file.name} deleted.`);
+  } else if (file.metageneration === '1') {
+    // metageneration attribute is updated on metadata changes.
+    // on create value is 1
+    console.log(`File ${file.name} uploaded.`);
+  } else {
+    console.log(`File ${file.name} metadata updated.`);
+  }
+
+  callback();
+};
+</code></pre>
+</div>
+
+<p><br />
+This is an example of a function that can react to changes in a Google Cloud Storage bucket (i.e. file upload, deletion and metadata changes). If you want a complete example of how to implement this hit up <a href="https://cloud.google.com/functions/docs/tutorials/storage.">https://cloud.google.com/functions/docs/tutorials/storage.</a></p>
+
+<p>It’s pretty damn cool that we can simply write and deploy a JavaScript function and be confident in its availability, scalability AND cost-efficiency!</p>
+
+<p><br />
+<strong>FaaS Advantages</strong></p>
+
+<ol>
+  <li>
+    <p>Fewer developer logistics — server infrastructure management is handled by someone else.</p>
+  </li>
+  <li>
+    <p>More time focused on writing code / app specific logic — higher developer velocity.</p>
+  </li>
+  <li>
+    <p>Inherently scalable. Rather than scaling your entire application you can scale your functions automatically and independently with usage.</p>
+  </li>
+  <li>
+    <p>Never pay for idle resources.</p>
+  </li>
+  <li>
+    <p>Built in availability and fault tolerance.</p>
+  </li>
+  <li>
+    <p>Business logic is necessarily modular and conform to minimal shippable unit sizes.</p>
+  </li>
+</ol>
+
+<p><br />
+<strong>FaaS Disadvantages</strong></p>
+
+<ol>
+  <li>
+    <p>Decreased transparency. Someone else is managing your infrastructure so it can be tough to understand the entire system.</p>
+  </li>
+  <li>
+    <p>Potentially tough to debug. There are tools that allow remote debugging and some services (i.e. Azure) provide a mirrored local development environment but there is still a need for improved tooling.</p>
+  </li>
+  <li>
+    <p>Auto-scaling of function calls often means auto-scaling of cost. This can make it tough to gauge your business expenses.</p>
+  </li>
+  <li>
+    <p>You now have a ton of functions deployed and it can be tough to keep track of them. This comes down to a need for better tooling (<strong>developmental: **scripts, frameworks, **diagnostic:</strong> step-through debugging, local runtimes, cloud debugging, and <strong>visualization:</strong> user interfaces, analytics, monitoring).</p>
+  </li>
+  <li>
+    <p>Solutions for caching resources between stateless requests (i.e. DB connections) and recycling network requests are still pending.</p>
+  </li>
+</ol>
+
+<p>It’s important to note that FaaS isn’t a hammer that you can use for every nail. That being said, many of its disadvantages can be attributed to its infancy.</p>
+
+<p><br />
+<strong>FaaS use cases</strong></p>
+
+<p>Web apps, Backends, Data/stream processing, Chatbots, Scheduled tasks, IT Automation</p>
+
+<p><br />
+<strong>Existing FaaS providers</strong></p>
+
+<ul>
+  <li>
+    <p>Microsoft/Azure Functions — <a href="https://azure.microsoft.com/en-us/services/functions/">https://azure.microsoft.com/en-us/services/functions/</a></p>
+  </li>
+  <li>
+    <p>Tooling, bindings &amp; triggers</p>
+  </li>
+  <li>
+    <p>Logic apps — visual designer with 25+ connectors and function orchestration</p>
+  </li>
+  <li>
+    <p>Event grid</p>
+  </li>
+  <li>
+    <p>Local debugging</p>
+  </li>
+  <li>
+    <p>AWS Lambda Functions — <a href="https://aws.amazon.com/lambda/">https://aws.amazon.com/lambda/</a></p>
+  </li>
+  <li>
+    <p>Functions, APIs, Tables</p>
+  </li>
+  <li>
+    <p>Google Cloud Functions / Firebase — <a href="https://cloud.google.com/functions/">https://cloud.google.com/functions/</a></p>
+  </li>
+  <li>
+    <p>Cloud storage, Cloud pub/sub, HTTPS, Stackdriver logs</p>
+  </li>
+  <li>
+    <p>Tracing &amp; debugging in production</p>
+  </li>
+  <li>
+    <p>Firebase provides realtime DB, analytics, additional event triggers</p>
+  </li>
+  <li>
+    <p>IBM Cloud Functions — <a href="https://console.bluemix.net/openwhisk/">https://console.bluemix.net/openwhisk/</a></p>
+  </li>
+</ul>
+
+<p><br />
+<strong>Libraries supporting FaaS</strong></p>
+
+<p><strong>stdlib</strong> — <a href="https://stdlib.com/">https://stdlib.com/</a></p>
+
+<ul>
+  <li>
+    <p>Positions themselves as the “standard library for Functions as a Service”</p>
+  </li>
+  <li>
+    <p>High level framework that tries to standardize FaaS providers and abstract it to the point where you only need to worry about 1) functions and 2) API specifications.</p>
+  </li>
+  <li>
+    <p>Supports type safety with NodeJS using an extended set of types (hello float)</p>
+  </li>
+  <li>
+    <p>Easy to ship code</p>
+  </li>
+</ul>
+
+<p><strong>spring-cloud-function</strong> — <a href="http://cloud.spring.io/spring-cloud-function/">http://cloud.spring.io/spring-cloud-function/</a></p>
+
+<ul>
+  <li>Builds on Spring Boot to promote functional programming in Java</li>
+</ul>
+
+<p><strong>projectreactor.io</strong> — <a href="http://projectreactor.io/">http://projectreactor.io/</a></p>
+
+<ul>
+  <li>Java library for building reactive applications</li>
+</ul>
+
+<p><strong>@architect</strong> — <a href="https://github.com/arc-repos/arc-workflows">https://github.com/arc-repos/arc-workflows</a></p>
+
+<ul>
+  <li>Simple JavaScript library that provides scripts to create/deploy and modify cloud functions</li>
+</ul>
+
+<p><br />
+<strong>Conclusion</strong></p>
+
+<p>I’m quite new to this FaaS revolution but the pieces that I’ve seen are pretty damn cool. I think I need to learn a bit more to write anything insightful into this “conclusions” section but I hope this post has at least piqued your interest in something new and exciting.</p>
+
+<p>Happy learning!</p>
+
+<p><br />
+<strong><em>Sources/Reading</em></strong></p>
+
+<p><em>1 — <a href="http://lukeangel.co/cross-platform/docker-servless-faas-functions-as-a-service/">http://lukeangel.co/cross-platform/docker-servless-faas-functions-as-a-service/</a></em></p>
+
+<p><em>2- <a href="https://martinfowler.com/articles/serverless.html">https://martinfowler.com/articles/serverless.html</a></em></p>
+
+<p><em>3- <a href="https://www.devbridge.com/articles/what-comes-after-microservices-serverless/">https://www.devbridge.com/articles/what-comes-after-microservices-serverless/</a></em></p>
+
+<p><em>4- <a href="https://www.iron.io/what-is-serverless-computing/">https://www.iron.io/what-is-serverless-computing/</a></em></p>
+
+<p><em>5- <a href="https://stackify.com/function-as-a-service-serverless-architecture/">https://stackify.com/function-as-a-service-serverless-architecture/</a></em></p>
+
+<p><br />
+<strong>To Readers: What are your thoughts on Serverless and FaaS? Is this the future?</strong></p>
+
+<p>Comment on <a href="https://medium.com/@BoweiHan/an-introduction-to-serverless-and-faas-functions-as-a-service-fb5cec0417b2">Medium</a></p>

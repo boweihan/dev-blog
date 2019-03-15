@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>5 Lessons Learned Migrating To React/Redux</title>
+  <meta property="og:title" content="5 Lessons Learned Migrating To React/Redux" />
+  <meta name="twitter:title" content="5 Lessons Learned Migrating To React/Redux" />
+  <meta name="description" content="Over the last few months at work our team had the opportunity to give some love to one of our core codebases — a JavaScript add-in (henceforth known as the JSAddin) embedded in Office365. The project was built under tight time constraints and quickly became a pain to extend and maintain.">
+  <meta property="og:description" content="Over the last few months at work our team had the opportunity to give some love to one of our core codebases — a JavaScript add-in (henceforth known as the JSAddin) embedded in Office365. The project was built under tight time constraints and quickly became a pain to extend and maintain.">
+  <meta name="twitter:description" content="Over the last few months at work our team had the opportunity to give some love to one of our core codebases — a JavaScript add-in (henceforth known as the JSAddin) embedded in Office365. The project …">
+  <meta name="author" content=""/>
+  <meta name="twitter:card" content="summary" />
+  <meta property="og:url" content="https://www.pushingthestack.com/javascript/react-redux-5-lessons-learned/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Pushing the Stack" />
+
+  <meta name="generator" content="Hugo 0.49" />
+  <link rel="canonical" href="https://www.pushingthestack.com/javascript/react-redux-5-lessons-learned/" />
+  <link rel="alternate" href="https://www.pushingthestack.com/index.xml" type="application/rss+xml" title="Pushing the Stack">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://www.pushingthestack.com/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" /><link rel="stylesheet" href="https://www.pushingthestack.com/css/syntax.css" /><link rel="stylesheet" href="https://www.pushingthestack.com/css/codeblock.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css" integrity="sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css" integrity="sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R" crossorigin="anonymous">
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-127162666-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="https://www.pushingthestack.com/">Pushing the Stack</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+        
+          
+            <li>
+              <a title="JavaScript" href="/javascript/">JavaScript</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="Devops" href="/devops/">Devops</a>
+            </li>
+          
+        
+
+        
+
+        
+      </ul>
+    </div>
+
+    
+
+  </div>
+</nav>
+
+
+
+
+    
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+
+  
+  
+  
+
+
+
+
+
+
+  
+
+  <header class="header-section ">
+    
+    <div class="intro-header no-img">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="post-heading">
+              
+                <h1>5 Lessons Learned Migrating To React/Redux</h1>
+              
+              
+              
+              
+                <span class="post-meta">
+  
+  
+  <i class="fa fa-calendar-o"></i>&nbsp;Posted on July 15, 2018
+  
+  
+  
+</span>
+
+
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+    
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+        
+
+<p>Over the last few months at work our team had the opportunity to give some love to one of our core codebases — a JavaScript add-in (henceforth known as the JSAddin) embedded in Office365. The project was built under tight time constraints and quickly became a pain to extend and maintain.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*CSW1YMs2yuwI95p_aMAhaQ.png" alt="Try not to be this guy" /></p>
+
+<p><center>Try not to be this guy</center></p>
+
+<p><em>Note: This post is going to assume some familiarity with React and Redux.</em></p>
+
+<p><br/></p>
+
+<h2 id="the-breaking-point"><strong>The Breaking Point</strong></h2>
+
+<p>The JSAddin, a composition of JQuery / Office Fabric UI / Vanilla JS, had reached a breaking point for a few reasons:</p>
+
+<ul>
+<li><p>As a highly configurable product, we had a tough time modifying functionality without getting hit by multiple unintended side effects — mostly in the form of UI bugs.</p></li>
+
+<li><p>High coupling and low cohesion resulted in the JSAddin being difficult to test. Building an application in Office365 involves juggling external dependencies (Excel’s API / our back-end / browser APIs) and a lack of best practices made that…difficult.</p></li>
+
+<li><p>Lack of developer happiness (or HYPE —a word we find any excuse to use on the O365 team). Simple features took a long time to deliver and the ratio of feature work to bug-fixes was quickly becoming demotivating.</p></li>
+</ul>
+
+<p>The problems basically boiled down to inefficient patterns around state, dependencies, and reusability. The codebase had reached a point where it made more sense to rewrite than to refactor…and rewrite we did! We started diving in early this year after identifying React/Redux as our technology of choice.</p>
+
+<p><br/></p>
+
+<h2 id="lessons-learned">Lessons Learned</h2>
+
+<p>Building best practices into the JSAddin has been a team effort and we’ve experimented quite a bit over the last few months. Without further ado, here lay five best practices that have given us the most mileage.</p>
+
+<h3 id="lesson-1-prioritize-component-reusability"><strong>Lesson 1. Prioritize Component Reusability</strong></h3>
+
+<p>If you haven’t come across it, I would recommend you read Brad Frosts’ article on <a href="http://bradfrost.com/blog/post/atomic-web-design/">Atomic Design</a>. We took an atomic approach to building React components, which basically means putting reusability first. It also means being liberal with component props.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2656/1*uWqGG3unm6jLsYyS60Lyvw.png" alt="Configurable button with a healthy dose of props" /><center><em>Configurable button with a healthy dose of props</em></center></p>
+
+<p>Our focus on reusability also meant employing component patterns when necessary — i.e. higher order components — to decorate base components with custom render behaviour and generic modifications.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2836/1*Y5h9-zq7TMINhslAJe-nsQ.png" alt="Decorating a base component with a callout using a HOC" /><center><em>Decorating a base component with a callout using a HOC</em></center></p>
+
+<p>Building components from the bottom up made it easy for us to conform to a consistent design system and make app-wide style modifications. We’ve also noticed that our UI development velocity is actually <strong>increasing</strong> with the size of our codebase!</p>
+
+<h3 id="lesson-2-write-declarative-actions">Lesson 2. Write Declarative Actions</h3>
+
+<p>One of the first features that we implemented in React/Redux was authentication. The first iteration of our action creators explicitly described state changes with very little tie-in to actual user actions. Our login flow looked something like this:</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2684/1*7F1nrNAz6-1E0CHiVXZNyg.png" alt="Imperative Redux" /><center><em>Imperative Redux</em></center></p>
+
+<p>We quickly realized that using action creators as a glorified setter for your redux state is a great way to obscure your action log and build a confusing mental model for your application.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2740/1*3_VAsmdqyRYIuGmkfbY8fw.png" alt="Having actions that don’t correspond with the actual user action" /><center><em>Having actions that don’t correspond with the actual user action</em></center></p>
+
+<p>Moving away from imperative action creators towards a more declarative approach results in a much simpler mental model for state changes and produces a nice and clean action log.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2704/1*N_-yl83OC0mEKApeaqXn3w.png" alt="Declarative Redux — a bit easier to read" /><center><em>Declarative Redux — a bit easier to read</em></center></p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2696/1*Q2_zelFUCLpQnNkG301heg.png" alt="No more overlapping lines!" /><center><em>No more overlapping lines!</em></center></p>
+
+<h3 id="lesson-3-make-error-handling-a-breeze">Lesson 3. Make Error Handling a Breeze</h3>
+
+<p>There are a few places in a React/Redux application where exceptions need some special handling.</p>
+
+<ol>
+<li><p>Exceptions in custom component methods or internal/external JS dependencies. (Typical JS errors)</p></li>
+
+<li><p>Exceptions in Redux flow. (actions/reducers)</p></li>
+
+<li><p>Exceptions in <a href="https://github.com/facebook/react/issues/11409">event handlers</a>.</p></li>
+</ol>
+
+<p>The first features we wrote with React/Redux had logic buried in component methods or services which were called directly by components. This meant that we had to remember to <strong>try {} catch {}</strong> potential errors and resulted in quite a few unhandled exceptions.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/4280/1*bUhUd0D7pt2qcutI9y05fQ.png" alt="Yikes." /><center><em>Yikes.</em></center></p>
+
+<p>We soon found out that it was much easier to handle exceptions within the Redux flow — specifically in actions — with the help of middleware. Even just having a simple snippet such as the one below was enough to guarantee that all exceptions thrown in action-creators would be handled in some shape or form.</p>
+
+<script src="https://gist.github.com/boweihan/e8944158f206ef0454cce8568d186c60.js"></script>
+
+<p>Moving business logic and service calls from components into actions basically eliminated a whole class of errors (<strong>1</strong>) and significantly reduced the frequency of another (<strong>3</strong>).</p>
+
+<h3 id="lesson-4-leverage-middleware">Lesson 4. Leverage Middleware</h3>
+
+<p>When we started building our React/Redux application most of the excitement and focus was around component composition and state simplification. Later on, we discovered the power of middleware — a logical layer that can act on redux actions in transit.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2880/1*4j6zeoz9qom1MlptTFIMKw.png" alt="Middleware — a highly flexible layer between action dispatch and reduction" /><center><em>Middleware — a highly flexible layer between action dispatch and reduction</em></center></p>
+
+<p>Having the ability to view, augment and modify a stream of actions as they happen is extremely powerful and makes it easy to implement features such as analytics, error handling, and logging.</p>
+
+<p>An area where middleware has saved my team more than a few headaches is request handling. Trying to coordinate request states (pending, failure, success, cancelled) and making those states available for consumption by connected components (components able to access Redux state) is a task that would normally require a ton of boilerplate. Thankfully, we can simply write actions that look like this:</p>
+
+<script src="https://gist.github.com/boweihan/1254ee380e3f34b095538f4e37abb866.js"></script>
+
+<p>The request middleware will intercept this action and immediately dispatch <b>AUTH_PENDING</b>. It will then execute the given promise and dispatch <b>AUTH_SUCCESS</b> or <b>AUTH_FAILURE</b> based on whether an error occurred - in the above example there are also overrides for success and failure callbacks. Just a few lines of middleware can guarantee that asynchronous request states are handled app-wide in a consistent way!</p>
+
+<h3 id="lesson-5-place-emphasis-on-developer-tooling">Lesson 5. Place Emphasis on Developer Tooling</h3>
+
+<p>The impact of high value developer tooling cannot be overstated when it comes to building a quality codebase and maintaining developer happiness. We took time up-front to decide on the tooling we wanted to use before implementing user-facing features. Tools that made working on the JSAddin a pleasure include:</p>
+
+<ul>
+<li><p><a href="https://eslint.org/">ESLint</a> — Reducing the possibility of silly typos and unsafe code makes for easier code reviews. There are some great framework specific ESLint plugins.</p></li>
+
+<li><p><a href="https://github.com/prettier/prettier">Prettier</a> —I try to avoid remembering the dark days before code auto-formatting.</p></li>
+
+<li><p><a href="https://flow.org/en/docs/">Flow</a> — Flow brings opt-in type checking to a dynamic language with features like generics, optional nullability, type aliasing, disjoint unions and type inferencing. Achieving complete type safety is probably not going to happen (and it’s probably not worth it to try) but we’ve been happy with the gradual diffusion of parameter checking, prop / state typing, and referential transparency into the JSAddin.</p></li>
+</ul>
+
+<p><img src="https://cdn-images-1.medium.com/max/4072/1*jzRgPGxGz_DBe-ZzzDli5g.png" alt="Doesn’t this just scream “FIX ME”?" /><center><em>Doesn’t this just scream “FIX ME”?</em></center></p>
+
+<p>Automating away tedious human errors gives us the time to focus on the more hard hitting issues.</p>
+
+<p><br/></p>
+
+<h2 id="looking-forward">Looking Forward</h2>
+
+<p>This is just the beginning of Vena’s foray into front-end modernization as we continue improving best practices throughout our codebases. Rewriting the JSAddin has been a great learning experience thus far and we’re ready to dive even deeper in our mission to provide a delightful experience for both our users and ourselves!</p>
+
+<p>Comment on <a href="https://medium.com/@BoweiHan/rewriting-the-jsaddin-with-react-redux-5-lessons-learned-20daecf39ba8">Medium</a> and <a href="https://twitter.com/BoweiHan/status/1018578838509576201">Twitter</a>.</p>
+
+
+        
+
+        
+      </article>
+
+      
+        <ul class="pager blog-pager">
+          
+            <li class="previous">
+              <a href="https://www.pushingthestack.com/javascript/closures/" data-toggle="tooltip" data-placement="top" title="JavaScript Closures Demystified">&larr; Previous Post</a>
+            </li>
+          
+          
+            <li class="next">
+              <a href="https://www.pushingthestack.com/javascript/rendering/" data-toggle="tooltip" data-placement="top" title="Optimizing React Rendering">Next Post &rarr;</a>
+            </li>
+          
+        </ul>
+      
+
+
+      
+
+    </div>
+  </div>
+</div>
+
+    <footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+          
+        </ul>
+        <p class="credits copyright text-muted">
+          
+
+          &nbsp;&bull;&nbsp;
+          2018
+
+          
+            &nbsp;&bull;&nbsp;
+            <a href="https://www.pushingthestack.com/">Pushing the Stack</a>
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js" integrity="sha384-/y1Nn9+QQAipbNQWU65krzJralCnuOasHncUFXGkdwntGeSvQicrYkiUBwsgUqc1" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/contrib/auto-render.min.js" integrity="sha384-dq1/gEHSxPZQ7DdrM82ID4YVol9BYyU7GbWlIwnwyPzotpoc57wDw/guX8EaYGPx" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://www.pushingthestack.com/js/main.js"></script><script> renderMathInElement(document.body); </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script>
+<script src="https://www.pushingthestack.com/js/load-photoswipe.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
+

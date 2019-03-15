@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>Unit Testing AMD Modules with Karma, Mocha and RequireJS</title>
+  <meta property="og:title" content="Unit Testing AMD Modules with Karma, Mocha and RequireJS" />
+  <meta name="twitter:title" content="Unit Testing AMD Modules with Karma, Mocha and RequireJS" />
+  <meta name="description" content="As the complexity of a web application increases, manual testing of front-end functionality can no longer provide a reasonable level of confidence. Time that used to be spent developing new features is now spent fixing an increasing number of regression issues…
+My company, like many others, is striving for daily deployments.">
+  <meta property="og:description" content="As the complexity of a web application increases, manual testing of front-end functionality can no longer provide a reasonable level of confidence. Time that used to be spent developing new features is now spent fixing an increasing number of regression issues…
+My company, like many others, is striving for daily deployments.">
+  <meta name="twitter:description" content="As the complexity of a web application increases, manual testing of front-end functionality can no longer provide a reasonable level of confidence. Time that used to be spent developing new features …">
+  <meta name="author" content=""/>
+  <meta name="twitter:card" content="summary" />
+  <meta property="og:url" content="https://www.pushingthestack.com/javascript/karma-unit-testing/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Pushing the Stack" />
+
+  <meta name="generator" content="Hugo 0.49" />
+  <link rel="canonical" href="https://www.pushingthestack.com/javascript/karma-unit-testing/" />
+  <link rel="alternate" href="https://www.pushingthestack.com/index.xml" type="application/rss+xml" title="Pushing the Stack">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://www.pushingthestack.com/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" /><link rel="stylesheet" href="https://www.pushingthestack.com/css/syntax.css" /><link rel="stylesheet" href="https://www.pushingthestack.com/css/codeblock.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css" integrity="sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css" integrity="sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R" crossorigin="anonymous">
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-127162666-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="https://www.pushingthestack.com/">Pushing the Stack</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+        
+          
+            <li>
+              <a title="JavaScript" href="/javascript/">JavaScript</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="Devops" href="/devops/">Devops</a>
+            </li>
+          
+        
+
+        
+
+        
+      </ul>
+    </div>
+
+    
+
+  </div>
+</nav>
+
+
+
+
+    
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+
+  
+  
+  
+
+
+
+
+
+
+  
+
+  <header class="header-section ">
+    
+    <div class="intro-header no-img">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="post-heading">
+              
+                <h1>Unit Testing AMD Modules with Karma, Mocha and RequireJS</h1>
+              
+              
+              
+              
+                <span class="post-meta">
+  
+  
+  <i class="fa fa-calendar-o"></i>&nbsp;Posted on February 4, 2017
+  
+  
+  
+</span>
+
+
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+    
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+        <p>As the complexity of a web application increases, manual testing of front-end functionality can no longer provide a reasonable level of confidence. Time that used to be spent developing new features is now spent fixing an increasing number of regression issues…</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*9jbEPTyF9zxAtOnjWCOF9Q.jpeg" alt="" /></p>
+
+<p>My company, like many others, is striving for daily deployments. This means that newly developed features will have less than a day to be tested before being pushed to production. This also means that we can no longer rely solely on manual testing to identify new bugs and regressions. In order to accommodate this change we’ve turned to front-end integration and unit testing.</p>
+
+<p><strong>Integration testing</strong> is the process of testing software modules as a group. This could mean using a tool like Selenium to comb through your website and ensure that all user functionality is working as intended (user experience tests).</p>
+
+<p><strong>Unit testing</strong> is the process of testing the logic in individual software modules. This can be useful when you want to make sure your validation function covers all edge cases, or even if you want feedback during the development process (TDD anyone?).</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*UQkdoxcM19eZmLTAaQ0N4A.jpeg" alt="" /></p>
+
+<p>This article will focus on the implementation of front-end unit tests. Our ‘stack’ will consist of 1) <strong>Karma</strong> as the test runner and 2) <strong>Mocha</strong> as the test framework. We’ll also make sure it plays nicely with 3) <strong>RequireJS.</strong></p>
+
+<p><br/>
+<strong>Karma</strong></p>
+
+<p>Karma is a JavaScript test runner created by the team at AngularJS. It IS possible to write unit tests with Mocha alone, however, Karma provides some powerful features that are quite nice to have. In fact, it was the lack of online resources for coupling Karma, Mocha and RequireJS that prompted me to write this article. We’ll be using Karma to build dependencies, create a test server, check for code coverage and drive tests in multiple browsers.</p>
+
+<p>First, install frameworks:
+<br/>
+<br/></p>
+
+<pre><code>npm install karma --save-dev
+npm install karma-mocha --save-dev
+npm install karma-chai --save-dev
+npm install karma-requirejs --save-dev
+</code></pre>
+
+<p><br/>
+Karma comes with built-in plugins for Mocha, Chai and RequireJS. We’ll use Mocha for writing tests, Chai for assertions, and RequireJS for loading AMD modules. We’ll look at these in more detail later.</p>
+
+<p>Next, install plugins (and PhantomJS):
+<br/>
+<br/></p>
+
+<pre><code>npm install karma-chrome-launcher --save-dev
+npm install karma-firefox-launcher --save-dev
+npm install karma-opera-launcher --save-dev
+npm install karma-safari-launcher --save-dev
+npm install karma-phantomjs-launcher --save-dev
+npm install phantomjs --save-dev
+</code></pre>
+
+<p><br/>
+Karma is powerful in that it allows tests to be run simultaneously in multiple browsers. We’ll be supporting Firefox, Opera, Chrome, Safari and PhantomJS. These browser plugins are needed to help Karma find the appropriate binary files, which means you can only run tests on browsers that are already installed on your local machine.</p>
+
+<p>Oh, and while you’re at it, throw in karma-coverage
+<br/>
+<br/></p>
+
+<pre><code>npm install karma-coverage --save-dev
+</code></pre>
+
+<p><br/>
+This plugin is a fork of <a href="http://gotwarlost.github.io/istanbul/">Istanbul</a> which will give us the ability to easily track code coverage.</p>
+
+<p><br/>
+<strong>Karma</strong></p>
+
+<p>Next, create your karma config file. This can be done with the command “karma init” or by creating a karma.conf.js file in your apps root directory. This is what my config file looks like:
+<br/>
+<br/></p>
+
+<pre><code>module.exports = function(config) {
+  config.set({
+
+    basePath: '',
+
+    frameworks: ['mocha', 'requirejs', 'chai'],
+
+    files: [
+        {pattern: './config.js', included: true},
+        {pattern: './app/**/*.json', included: false},
+        {pattern: './app/**/*.html', included: false},
+        {pattern: './app/**/*.js', included: false},
+        {pattern: './library/**/*.js', included: false},
+        {pattern: './unit-tests/**/*.js', included: false},
+        {pattern: './unit-tests/main.js', included: true}
+    ],
+
+    exclude: [
+        './app/private/header/failure.js'
+    ],
+
+    preprocessors: {
+        './app/**/*.js': 'coverage'
+    },
+
+    coverageReporter: {
+      type : 'text-summary',
+      dir : 'coverage/',
+      includeAllSources : true
+    },
+
+    reporters: ['progress', 'junit', 'coverage'],
+
+    browsers: ['PhantomJS', 'Chrome', 'Firefox', 'Safari'],
+
+    port: 9876,
+
+    colors: true,
+
+    logLevel: config.LOG_INFO,
+
+    autoWatch: true,
+
+    singleRun: false,
+
+    concurrency: Infinity,
+  })
+}
+</code></pre>
+
+<p><br/>
+It is important to understand what is happening in the Karma config file:
+<br/>
+<br/></p>
+
+<pre><code>basePath: '',
+frameworks: ['mocha', 'requirejs', 'chai'],
+</code></pre>
+
+<p><br/>
+<strong><em>basePath</em></strong> is used to resolve all relative paths defined in the <em>files</em> and <em>excludes</em> properties of the config.
+<br/>
+<br/></p>
+
+<pre><code>files: [
+    {pattern: 'config.js', included: true},
+    {pattern: 'app/**/*.json', included: false},
+    {pattern: 'app/**/*.html', included: false},
+    {pattern: 'app/**/*.js', included: false},
+    {pattern: 'libs/**/*.js', included: false},
+    {pattern: 'unit-tests/**/*.js', included: false},
+    {pattern: 'unit-tests/main.js', included: true}
+],
+</code></pre>
+
+<p><br/>
+<strong><em>files</em></strong> tells Karma which files to serve when it starts it’s web server. Any files that need to be imported, tested, or seen in any capacity need to included here. File patterns leverage the <a href="https://github.com/isaacs/minimatch">minimatch</a> library — i.e. <code>app/**/*.js</code> will include all files in all subdirectories of the app directory. Only set <em>included: true</em> for files that should be included as a <code>&lt;script&gt;</code> tag or you may run into errors with RequireJS.
+<br/>
+<br/></p>
+
+<pre><code>exclude: [
+    './app/failure.js'
+],
+</code></pre>
+
+<p><br/>
+<strong><em>exclude</em></strong> lets you specify files that you don’t want Karma to serve. This is useful when you want to use minimatch to include an entire directory minus a few exceptional files.
+<br/>
+<br/></p>
+
+<pre><code>preprocessors: {
+    './app/**/*.js': 'coverage'
+},
+
+coverageReporter: {
+    type : 'text-summary',
+    dir : 'coverage/',
+    includeAllSources : true
+},
+
+reporters: ['progress', 'junit', 'coverage'],
+</code></pre>
+
+<p><br/>
+This chunk of the config is responsible for reporting and code coverage. The code to be checked for coverage is specified in <strong><em>preprocessors</em></strong> and coverage options can be modified in the <strong><em>coverageReporter.</em></strong> The desired output format is then specified in <strong><em>reporters</em></strong> (in this case, ‘progress’ displays the number of tests executed, ‘junit’ pipes the results to an xml file and ‘coverage’ logs a summary of coverage results.
+<br/>
+<br/></p>
+
+<pre><code>browsers: ['PhantomJS', 'Chrome', 'Firefox', 'Safari', 'Opera'],
+
+port: 9876,
+
+colors: true,
+
+logLevel: config.LOG_INFO,
+
+autoWatch: true,
+
+singleRun: true,
+
+concurrency: Infinity,
+</code></pre>
+
+<p><br/>
+In this example, the <strong><em>browsers</em></strong> we are testing include PhantomJS, Chrome, Firefox, Safari and Opera. Karma will run a web server on <strong><em>port</em></strong> 9876. Output log <strong><em>colors</em></strong> are enabled with a <strong><em>logLevel</em></strong> of “info”. The server is watching (<strong><em>autoWatch: true</em></strong>) for file changes automatically. Each run will test all browsers simultaneously (<strong><em>concurrency: Infinity</em></strong>) and finish by exiting all browsers/karma (<strong><em>singleRun: true</em></strong>).</p>
+
+<p><br/>
+<strong>RequireJS</strong></p>
+
+<p>Most of the work to set up RequireJS has already been done if you’ve followed up to this point. We’ve already included the RequireJS config file (see snippet below) and Karma has now been configured to bring in RequireJS as a framework.
+<br/>
+<br/></p>
+
+<pre><code>files: [
+    {pattern: './config.js', included: true},
+    {pattern: 'unit-tests/main.js', included: true}
+]
+</code></pre>
+
+<p><br/>
+There is some final configuration that needs to be done, which we’ll do in the main.js file.
+<br/>
+<br/></p>
+
+<pre><code>var tests = [];
+
+for (var file in window.__karma__.files) {
+    if (/\_test\.js$/.test(file)) { tests.push(file); }
+}
+
+requirejs.config({
+    baseUrl: '/base/app/',
+    deps: tests,
+    callback: mocha.run
+});
+</code></pre>
+
+<p><br/>
+We’re leveraging a bit of regex and the fact that karma serves all of its files in <code>window.__karma__.files</code> to specify all of our test files (which we label with _test). Calling mocha.run after the <code>requirejs.config()</code> update will initialize testing!</p>
+
+<p>If you’ve followed along with everything up until now, you’re ready to start writing unit tests — just label them with “_test.js”. Once you have written some tests, running them is as simple as typing <code>karma start karma.conf.js</code> in the command line (you might need to specify a path if you haven’t installed karma globally — <code>/node_modules/karma/bin/karma start karma.conf.js</code>).</p>
+
+<p>Happy testing!</p>
+
+<p><strong>Update (11/18/2017):</strong></p>
+
+<p>Per requested, here is what my directory tree looks after setup:</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*NahHIVQ268tO9IJp1Vuo0A.png" alt="Example unit test directory with karma.conf.js / main.js / *_test.js failes" /><center><em>Example unit test directory with <code>karma.conf.js / main.js / *_test.js</code></em></center></p>
+
+<p>This particular app is built with Backbone.js so I have folders split by role (i.e. admin) and collections/models/views. It doesn’t matter where you put main.js as long as you specify the correct path in the Karma configuration file.</p>
+
+<p>Here’s what the actual test looks like:</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/3232/1*RoPWVQhlGTKokYMAaven9A.png" alt="Unit testing a simple Backbone.js view — instantiation of the view in before(), checking that it is a subclass of the base view and testing isValidIPv4()." /><center><em>Unit testing a simple Backbone.js view — instantiation of the view in <code>before()</code>, checking that it is a subclass of the base view and testing <code>isValidIPv4()</code>.</em></center></p>
+
+<p>This is a simplistic test of a backbone view. We use the mocha <code>before()</code> hook to instantiate the view (AddIpDlgView.js), check if it’s a subclass of the base view and test the validity of a few IPs with <code>addIpDlgView.isValidIPv4()</code>. Dependencies are imported using typical <code>define()</code> syntax.</p>
+
+<p>Comment on <a href="https://medium.com/@BoweiHan/setup-for-testing-amd-modules-with-karma-requirejs-and-mocha-2be3931c6a72">Medium</a></p>
+
+
+        
+
+        
+      </article>
+
+      
+        <ul class="pager blog-pager">
+          
+          
+            <li class="next">
+              <a href="https://www.pushingthestack.com/javascript/eslint/" data-toggle="tooltip" data-placement="top" title="Instantly become a better developer with ESLint">Next Post &rarr;</a>
+            </li>
+          
+        </ul>
+      
+
+
+      
+
+    </div>
+  </div>
+</div>
+
+    <footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+          
+        </ul>
+        <p class="credits copyright text-muted">
+          
+
+          &nbsp;&bull;&nbsp;
+          2018
+
+          
+            &nbsp;&bull;&nbsp;
+            <a href="https://www.pushingthestack.com/">Pushing the Stack</a>
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js" integrity="sha384-/y1Nn9+QQAipbNQWU65krzJralCnuOasHncUFXGkdwntGeSvQicrYkiUBwsgUqc1" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/contrib/auto-render.min.js" integrity="sha384-dq1/gEHSxPZQ7DdrM82ID4YVol9BYyU7GbWlIwnwyPzotpoc57wDw/guX8EaYGPx" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://www.pushingthestack.com/js/main.js"></script><script> renderMathInElement(document.body); </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script>
+<script src="https://www.pushingthestack.com/js/load-photoswipe.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
+

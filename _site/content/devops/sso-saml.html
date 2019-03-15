@@ -1,0 +1,118 @@
+<p>Let’s talk about Single Sign-On (SSO), Security Assertion Markup Language (SAML) and Single Logout (SLO).</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*_hDf5cmKUnIIRxssl9N44g.png" alt="" /></p>
+
+<p><br />
+<strong><em>What is Single Sign-On?</em></strong></p>
+
+<p>Have you ever thought it would be nice to have one credential to all of your online accounts? Welcome to the world of Single Sign-On!</p>
+
+<p>SSO is a process that allows users to authenticate into multiple services after logging into a primary service. You might have already noticed this with Gmail, which lets you sign on to a myriad of sites with your google credentials alone.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*JVfyJgkVq70S678r-NQQTg.png" alt="" /></p>
+
+<p>The base process for SSO is as follows:</p>
+
+<ul>
+  <li>
+    <p>Log into main service (i.e. Gmail).</p>
+  </li>
+  <li>
+    <p>When you visit a new service (i.e. Medium), it redirects you to the main service to check if you are logged in.</p>
+  </li>
+  <li>
+    <p>Main service returns a one time password (OTP) token.</p>
+  </li>
+  <li>
+    <p>OTP token is verified by new service, and user is granted access.</p>
+  </li>
+</ul>
+
+<p>The three most common protocols for implementing SSO are OAuth, OpenID and SAML. The example with Gmail uses OAuth, which is an <strong>authorization protocol</strong>. SAML is different because it provides a means for users to access multiple domains with the <strong>same credentials</strong> (i.e. authentication, which is not covered by OAuth). Moving forward, we’ll be discussing how SSO is implemented with SAML.</p>
+
+<p><br />
+<strong><em>SAML what?</em></strong></p>
+
+<p>SAML (Security Assertion Markup Language) was developed in the early 2000s “to define an XML framework for exchanging authentication and authorization information.” Think of it as the standard for exchanging authentication and authorization data between two parties. SAML is critical to Single Sign-On because it allows a user’s identity to be passed from one place to another with digitally signed XML (eXtensible Markup Language) documents.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/4332/1*7VqWpxOm7mxa_dAa5rbuEA.png" alt="Example of a SAML AuthNRequest" /><center>*Example of a SAML AuthNRequest*</center></p>
+
+<p>The wealth of information that needs to be included in a SAML request — such as Version, ID, ProviderName, IssueInstant, Destination, ProtocolBinding, AssertionConsumerServiceURL, and Issuer — are critical to providing parties with adequate user context.</p>
+
+<p><br />
+<strong><em>SAML and SSO</em></strong></p>
+
+<p>This diagram (clockwise) sums up the flow for SAML SSO.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/3380/1*FfZ238hvS5cuC-iLJX-a7g.png" alt="SAML SSO User Flow" /><center>*SAML SSO User Flow*</center>
+<br /></p>
+<ul>
+  <li>
+    <p>User (Principle) accesses external service provider (SP) (i.e. your website).</p>
+  </li>
+  <li>
+    <p>Service provider identifies user’s origin (i.e. through IP or subdomain) and sends authentication request (AuthnRequest) to Identity Provider (i.e. Okta, ADFS).</p>
+  </li>
+  <li>
+    <p>User logs into IdP if necessary and initiates a session.</p>
+  </li>
+  <li>
+    <p>IdP builds XML authentication response containing the users email or username, signs it, and POST’s it back to service provider.</p>
+  </li>
+  <li>
+    <p>The service provider validates the response based on certificate fingerprint and identity provider.</p>
+  </li>
+  <li>
+    <p>User is granted access!</p>
+  </li>
+</ul>
+
+<p>This flow has significant advantages over logging in with a username/password because there is no need to type or remember credentials and no possibility of having a weak password. Amazing.</p>
+
+<p><br />
+<strong><em>The Logout Problem</em></strong></p>
+
+<p>While it is all good and fine to recklessly log into various web applications using SSO, this is not without drawbacks. Here are two:</p>
+
+<ul>
+  <li>
+    <p>Users rarely remember to log out of every session established during SSO. This opens the door to vulnerabilities such as session hijacking, where session tokens can be stolen through sniffing, XSS, and man-in-the-middle attacks.</p>
+  </li>
+  <li>
+    <p>Signing out of a service provider doesn’t mean you are signing out from the IdP, it only clears the local session. This means that if your IdP redirects unauthenticated users to a service provider automatically (a common scenario), signing out won’t have any effect because users will be redirected to the IdP and then redirected back to the service provider with a brand new session.</p>
+  </li>
+</ul>
+
+<p>This is where Single Logout (SLO) with SAML becomes useful.</p>
+
+<p><br />
+<strong><em>Single Logout</em></strong></p>
+
+<p>There are various configurations for SLO — we’ll discuss the “front channel” (HTTP redirect) model initiated by the service provider.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2292/1*xMbaV6E4060zic28pewbsQ.png" alt="" /></p>
+
+<ul>
+  <li>
+    <p>User hits logout.</p>
+  </li>
+  <li>
+    <p>Service provider creates a digitally signed SAML LogoutRequest and returns it to the user’s browser.</p>
+  </li>
+  <li>
+    <p>Browser sends request to IdP Single Logout URL which is appended with the LogoutRequest (base64 &amp; base64url encoded) in the query string.</p>
+  </li>
+  <li>
+    <p>IdP identifies all other SSO sessions for user and iteratively generates SLOs for each service provider.</p>
+  </li>
+  <li>
+    <p>After each service provider has successfully terminated its own session with the user, the IdP terminates its own session with the user and sends a LogoutResponse to the original service provider.</p>
+  </li>
+  <li>
+    <p>User is logged out of IdP and all service providers.</p>
+  </li>
+</ul>
+
+<p>Using SLO to log out of the IdP and service provider simultaneously will mitigate the risk of orphaned SSO sessions and allow users to log out with (more) confidence.</p>
+
+<p>Comment on <a href="https://medium.com/@BoweiHan/elijd-single-sign-on-saml-and-single-logout-624efd5a224">Medium</a></p>

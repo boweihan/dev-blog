@@ -1,0 +1,144 @@
+<h1 style="color: darkgray">Avoiding Avoidable Component Re-renders</h1>
+
+<p><br />
+My team recently spent some time making performance improvements to a data-reporting front-end we build and maintain at <a href="https://venasolutions.com/">Vena Solutions</a>. The application is built entirely in React and has grown to the point where we are starting to notice sluggish performance in certain views and features — especially those tasked with rendering many sub-components (lists and trees). It turns out that most of our issues were the result of sub-optimal key usage and avoidable component re-rendering.</p>
+
+<p>This article highlights some of the optimizations that we applied to reduce avoidable re-renders in our application.</p>
+
+<p><br /></p>
+
+<h2 id="pre-optimization--dont-abuse-keys"><strong>Pre-Optimization — Don’t Abuse Keys!</strong></h2>
+
+<blockquote>
+  <h1 id="keys-can-turn-your-application-into-a-rendering-jackhammer">Keys can turn your application into a rendering jackhammer.</h1>
+</blockquote>
+
+<p><img src="https://cdn-images-1.medium.com/max/3440/1*mar5ltfc1QqQXv3TvFkK0A.png" alt="Keys. Potential Performance Killer." /><center>_Keys. Potential Performance Killer._</center></p>
+
+<p>Keys are an essential prop when iteratively rendering collections of elements. React uses them to keep track of elements in collections and poor choices for keys — keys that are not <strong>stable, predictable and unique</strong> — can lead to inefficient or even incorrect rendering behaviour. Examples of potentially suboptimal keys include timestamps (an unstable key that will always force a render), array indices (an unpredictable key that may not always map back to the same element) and duplicated keys.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/3120/1*ejyN3nQEkCJVxLaGnBRI8A.png" alt="You might want to avoid errors that look like this." /><center>_You might want to avoid errors that look like this._</center></p>
+
+<p>There is a time and a place to use keys (e.g. when dealing with lists) but it is also quite easy to <strong>misuse</strong> keys. Our data-reporting front-end had situations where keys were used to forcibly re-render non-iterated components in cases where render behaviour is poorly understood or when third party libraries are involved.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/4464/1*aXmvm_ytbP06V52i6gFVRw.png" alt="The List isn’t rendering for some reason so let’s just force re-rendering with a key. Everything is awesome." /><center>_The List isn’t rendering for some reason so let’s just force re-rendering with a key. Everything is awesome._</center></p>
+
+<p>The key prop causes React to discard the entire component instance and DOM subtree every time the value of the key changes. Removing instances of misused keys is a necessary pre-optimization because it makes it very hard to apply any further optimizations.</p>
+
+<p><br /></p>
+
+<h2 id="optimization--use-purecomponent"><strong>Optimization — Use PureComponent</strong></h2>
+
+<blockquote>
+  <h1 id="use-purecomponent-when-you-have-performance-issues-and-have-determined-that-a-specific-component-was-re-rendering-too-often-but-its-props-andor-state-are-shallowly-equal-dan-abramov">Use PureComponent when you have performance issues and have determined that a specific component was re-rendering too often, but its props and/or state are shallowly equal— Dan Abramov</h1>
+</blockquote>
+
+<p>The <strong>PureComponent</strong> base class was added to React in version 15.3.0 and provides a simple render optimization out of the box. A regular <strong>Component</strong> will render whenever it receives new props or state but a <strong>PureComponent</strong> will perform a shallow comparison of props and state and only render if there is a difference. The initial quote from Dan Abramov says it all — use PureComponent if you notice rendering happening even though props and state have not changed. These are avoidable renders and can be slowing your application down significantly!</p>
+
+<p>I used <a href="https://github.com/facebook/create-react-app">create-react-app</a> to scaffold a very simple demonstration of the impact of PureComponent <a href="https://github.com/boweihan/react-performance-demo">here</a>. The application renders a custom List component that iteratively generates a long list of custom ListItem components (20000 to be exact).</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/3016/1*hGb2O_YDRNxoHos1y7sO1w.png" alt="List of 20000 ListItem Components" /><center>_List of 20000 ListItem Components_</center></p>
+
+<p>The render button triggers a <code class="highlighter-rouge">setState</code> operation which simply passes back the same state. The performance of this application when simply extending <strong>Component</strong> is shown below. The colours in the flame graph indicate that all components are being re-rendered even though there is no difference in state and props.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/3664/1*DEGO9Ig_mSm0jUPDL6Lyww.png" alt="Application performance with List and ListItem as Components" /><center>_Application performance with List and ListItem as Components_</center></p>
+
+<p>The render takes almost a second even though nothing new is applied to the page! Let’s now have ListItem extend <strong>PureComponent</strong> instead of <strong>Component</strong>. The ListItems now do not re-render (you can tell because they are greyed out).</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/3648/1*frbTavo1dpdHAgww-XotgQ.png" alt="Application performance with ListItem as a PureComponent — 4x improvement!" /><center>_Application performance with ListItem as a PureComponent — 4x improvement!_</center></p>
+
+<p>219 ms — getting there. Let’s now have List extend <strong>PureComponent</strong> as well. We can tell from the flame graph that the application is now smart enough to only re-render the app component after <code class="highlighter-rouge">setState</code>.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/3652/1*vVD5AYXSkrayZRYi3MqJLw.png" alt="Application performance with List and ListItem as PureComponents — 100x improvement!" /><center>_Application performance with List and ListItem as PureComponents — 100x improvement!_</center></p>
+
+<p>Simply changing the base classes to be <strong>PureComponent</strong> and avoiding unnecessary re-renders was enough for a 100x performance improvement! This example may seem a tad trivial but re-rendering components when there are no changes to props or state is very common in applications that do not keep a keen eye on performance.</p>
+
+<p>A great way to monitor your application for avoidable renders is to install an npm package called <a href="https://github.com/maicki/why-did-you-update">why-did-you-update</a> which will monitor and log avoidable component renders straight into your browser console at runtime. My first use of this tool was an eye opener…</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2386/1*jzWmLzlU8_U1wjVEcfxZjA.png" alt="Looks like there are more than a few wasted renders here :)" /><center>_Looks like there are more than a few wasted renders here :)_</center></p>
+
+<p><strong>PureComponent</strong> is great when all you care about is shallow prop and state changes but there are cases when it doesn’t quite cut it — namely when…</p>
+
+<ol>
+  <li>
+    <p>Component render state is dependent on nested state/props.</p>
+  </li>
+  <li>
+    <p>State or props contains objects that are being re-created with the same properties (PureComponent uses === which compares <strong>object references rather than actually comparing object properties</strong> and since two different object instances will never satisfy strict equality the PureComponent will always re-render even if the object properties and values are the exact same!).</p>
+  </li>
+  <li>
+    <p>Certain properties on state or props are changing but do not affect the render state of the component (irrelevant props could be those that are passed through to child components).</p>
+  </li>
+</ol>
+
+<p>Thankfully, we have options.</p>
+
+<p><br /></p>
+
+<h2 id="optimization--shouldcomponentupdate"><strong>Optimization — ShouldComponentUpdate</strong></h2>
+
+<blockquote>
+  <h1 id="id-just-like-to-take-a-moment-and-thank-react-for-shouldcomponentupdate---some-person-on-twitter">I’d just like to take a moment and thank #react for #shouldComponentUpdate ❤ — some person on twitter</h1>
+</blockquote>
+
+<p><strong>ShouldComponentUpdate</strong> is a React component lifecycle method that determines whether or not a component should continue its render lifecycle. The method is called right before render. (You can find it in the Updating block on the React LifeCycle Cheat Sheet).</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/3668/1*gMdgkSygxwy9mlJCFyphBg.png" alt="React LifeCycle Cheat Sheet" /><center>_React LifeCycle Cheat Sheet_</center></p>
+
+<p><strong>PureComponent</strong> and <strong>Component</strong> actually implement this method under the hood in order to achieve selective rendering. I’ll start by providing some code samples which hopefully make it pretty clear what this method should do.</p>
+
+<p><br /></p>
+<h3 id="component-implementation"><em>Component</em> implementation:</h3>
+
+<p><br />
+<script src="https://gist.github.com/boweihan/9a952b8e9af279ad5bb77dc2eef417db.js"></script>
+<br /></p>
+<h3 id="purecomponent-implementation"><em>PureComponent</em> implementation:</h3>
+<p><br />
+<script src="https://gist.github.com/boweihan/7d819eed40cf31ad4e276ca1611f7336.js"></script>
+<br />
+The <a href="https://github.com/facebook/fbjs/blob/master/packages/fbjs/src/core/shallowEqual.js">shallowEqual implementation</a> used in the above source code can be found on Facebook’s Github page.</p>
+
+<p>ShouldComponentUpdate provides the flexibility for you to choose exactly <strong>when</strong> and <strong>why</strong> your components should update.</p>
+
+<p>Back to Vena’s data-reporting application…a particularly poor area of performance involved a tree view component which we found was re-rendering entire subtrees instead of just the nodes affected by an update. The component is a tad complex and was producing a bloated flame graph for an operation which only updates the state of a single top-level node.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/4020/1*usZwjitmQ64LIPJtMNG3Bg.png" alt="" /></p>
+
+<p>This performance is acceptable for small trees but the user experience is unbearable for larger trees. The majority of these renders are avoidable. The data for each node is nested in nature so we can’t simply rely on <strong>PureComponent</strong> to sort out our render issues and instead have to implement a custom <strong>shouldComponentUpdate</strong> method.</p>
+
+<p><br />
+<script src="https://gist.github.com/boweihan/98c4a22049c71c3ecd5d5890ab1e81e0.js"></script></p>
+
+<p><br />
+This change means that the nodes are now rendered on an as-needed basis and the component render count is effectively O(1) instead of O(N) with respect to the tree. The updated flame graph looks like this:</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/3696/1*QZyKv1uESTRHKISn-8Qzag.png" alt="" /></p>
+
+<p>That’s a 328x improvement! ShouldComponentUpdate makes these optimizations possible.</p>
+
+<h2 id="theres-more">There’s more…</h2>
+
+<p>The three performance areas covered in this post — <em>keys, PureComponent, and ShouldComponentUpdate</em> — are just the tip on the iceberg of potential performance improvements. We are conceptually solving caching problems and there are a few other potential areas for render optimizations that come to mind:</p>
+
+<ul>
+  <li>
+    <p>Using <a href="https://github.com/acdlite/recompose">recompose</a> to add selective rendering behaviour to your functional components.</p>
+  </li>
+  <li>
+    <p>Memoizing computationally intensive electors with <a href="https://github.com/reduxjs/reselect">reselect</a> (for Redux).</p>
+  </li>
+  <li>
+    <p>Lazy loading components and virtualizing lists. Libraries such as <a href="https://github.com/bvaughn/react-virtualized">react-virtualized</a> can help.</p>
+  </li>
+  <li>
+    <p>Caching with service workers</p>
+  </li>
+  <li>
+    <p>(insert your optimization here)</p>
+  </li>
+</ul>
+
+<p>At Vena we were able to solve most of our immediate issues by tackling the highlighted areas but we’re ready for the next challenge as we continue to scale!</p>
+
+<p>Comment on <a href="https://medium.com/@BoweiHan/optimizing-react-rendering-61a10e741edb">Medium</a></p>

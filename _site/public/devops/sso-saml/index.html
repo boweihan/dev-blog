@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>SSO, SAML and SLO</title>
+  <meta property="og:title" content="SSO, SAML and SLO" />
+  <meta name="twitter:title" content="SSO, SAML and SLO" />
+  <meta name="description" content="Let’s talk about Single Sign-On (SSO), Security Assertion Markup Language (SAML) and Single Logout (SLO).
+ What is Single Sign-On?
+Have you ever thought it would be nice to have one credential to all of your online accounts? Welcome to the world of Single Sign-On!
+SSO is a process that allows users to authenticate into multiple services after logging into a primary service.">
+  <meta property="og:description" content="Let’s talk about Single Sign-On (SSO), Security Assertion Markup Language (SAML) and Single Logout (SLO).
+ What is Single Sign-On?
+Have you ever thought it would be nice to have one credential to all of your online accounts? Welcome to the world of Single Sign-On!
+SSO is a process that allows users to authenticate into multiple services after logging into a primary service.">
+  <meta name="twitter:description" content="Let’s talk about Single Sign-On (SSO), Security Assertion Markup Language (SAML) and Single Logout (SLO).
+ What is Single Sign-On?
+Have you ever thought it would be nice to have one credential to all …">
+  <meta name="author" content=""/>
+  <meta name="twitter:card" content="summary" />
+  <meta property="og:url" content="https://www.pushingthestack.com/devops/sso-saml/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Pushing the Stack" />
+
+  <meta name="generator" content="Hugo 0.49" />
+  <link rel="canonical" href="https://www.pushingthestack.com/devops/sso-saml/" />
+  <link rel="alternate" href="https://www.pushingthestack.com/index.xml" type="application/rss+xml" title="Pushing the Stack">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://www.pushingthestack.com/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" /><link rel="stylesheet" href="https://www.pushingthestack.com/css/syntax.css" /><link rel="stylesheet" href="https://www.pushingthestack.com/css/codeblock.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css" integrity="sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css" integrity="sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R" crossorigin="anonymous">
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-127162666-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="https://www.pushingthestack.com/">Pushing the Stack</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+        
+          
+            <li>
+              <a title="JavaScript" href="/javascript/">JavaScript</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="Devops" href="/devops/">Devops</a>
+            </li>
+          
+        
+
+        
+
+        
+      </ul>
+    </div>
+
+    
+
+  </div>
+</nav>
+
+
+
+
+    
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+
+  
+  
+  
+
+
+
+
+
+
+  
+
+  <header class="header-section ">
+    
+    <div class="intro-header no-img">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="post-heading">
+              
+                <h1>SSO, SAML and SLO</h1>
+              
+              
+              
+              
+                <span class="post-meta">
+  
+  
+  <i class="fa fa-calendar-o"></i>&nbsp;Posted on December 25, 2016
+  
+  
+  
+</span>
+
+
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+    
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+        <p>Let’s talk about Single Sign-On (SSO), Security Assertion Markup Language (SAML) and Single Logout (SLO).</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*_hDf5cmKUnIIRxssl9N44g.png" alt="" /></p>
+
+<p><br/>
+<strong><em>What is Single Sign-On?</em></strong></p>
+
+<p>Have you ever thought it would be nice to have one credential to all of your online accounts? Welcome to the world of Single Sign-On!</p>
+
+<p>SSO is a process that allows users to authenticate into multiple services after logging into a primary service. You might have already noticed this with Gmail, which lets you sign on to a myriad of sites with your google credentials alone.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*JVfyJgkVq70S678r-NQQTg.png" alt="" /></p>
+
+<p>The base process for SSO is as follows:</p>
+
+<ul>
+<li><p>Log into main service (i.e. Gmail).</p></li>
+
+<li><p>When you visit a new service (i.e. Medium), it redirects you to the main service to check if you are logged in.</p></li>
+
+<li><p>Main service returns a one time password (OTP) token.</p></li>
+
+<li><p>OTP token is verified by new service, and user is granted access.</p></li>
+</ul>
+
+<p>The three most common protocols for implementing SSO are OAuth, OpenID and SAML. The example with Gmail uses OAuth, which is an <strong>authorization protocol</strong>. SAML is different because it provides a means for users to access multiple domains with the <strong>same credentials</strong> (i.e. authentication, which is not covered by OAuth). Moving forward, we’ll be discussing how SSO is implemented with SAML.</p>
+
+<p><br/>
+<strong><em>SAML what?</em></strong></p>
+
+<p>SAML (Security Assertion Markup Language) was developed in the early 2000s “to define an XML framework for exchanging authentication and authorization information.” Think of it as the standard for exchanging authentication and authorization data between two parties. SAML is critical to Single Sign-On because it allows a user’s identity to be passed from one place to another with digitally signed XML (eXtensible Markup Language) documents.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/4332/1*7VqWpxOm7mxa_dAa5rbuEA.png" alt="Example of a SAML AuthNRequest" /><center><em>Example of a SAML AuthNRequest</em></center></p>
+
+<p>The wealth of information that needs to be included in a SAML request — such as Version, ID, ProviderName, IssueInstant, Destination, ProtocolBinding, AssertionConsumerServiceURL, and Issuer — are critical to providing parties with adequate user context.</p>
+
+<p><br/>
+<strong><em>SAML and SSO</em></strong></p>
+
+<p>This diagram (clockwise) sums up the flow for SAML SSO.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/3380/1*FfZ238hvS5cuC-iLJX-a7g.png" alt="SAML SSO User Flow" /><center><em>SAML SSO User Flow</em></center>
+<br/>
+* User (Principle) accesses external service provider (SP) (i.e. your website).</p>
+
+<ul>
+<li><p>Service provider identifies user’s origin (i.e. through IP or subdomain) and sends authentication request (AuthnRequest) to Identity Provider (i.e. Okta, ADFS).</p></li>
+
+<li><p>User logs into IdP if necessary and initiates a session.</p></li>
+
+<li><p>IdP builds XML authentication response containing the users email or username, signs it, and POST’s it back to service provider.</p></li>
+
+<li><p>The service provider validates the response based on certificate fingerprint and identity provider.</p></li>
+
+<li><p>User is granted access!</p></li>
+</ul>
+
+<p>This flow has significant advantages over logging in with a username/password because there is no need to type or remember credentials and no possibility of having a weak password. Amazing.</p>
+
+<p><br/>
+<strong><em>The Logout Problem</em></strong></p>
+
+<p>While it is all good and fine to recklessly log into various web applications using SSO, this is not without drawbacks. Here are two:</p>
+
+<ul>
+<li><p>Users rarely remember to log out of every session established during SSO. This opens the door to vulnerabilities such as session hijacking, where session tokens can be stolen through sniffing, XSS, and man-in-the-middle attacks.</p></li>
+
+<li><p>Signing out of a service provider doesn’t mean you are signing out from the IdP, it only clears the local session. This means that if your IdP redirects unauthenticated users to a service provider automatically (a common scenario), signing out won’t have any effect because users will be redirected to the IdP and then redirected back to the service provider with a brand new session.</p></li>
+</ul>
+
+<p>This is where Single Logout (SLO) with SAML becomes useful.</p>
+
+<p><br/>
+<strong><em>Single Logout</em></strong></p>
+
+<p>There are various configurations for SLO — we’ll discuss the “front channel” (HTTP redirect) model initiated by the service provider.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2292/1*xMbaV6E4060zic28pewbsQ.png" alt="" /></p>
+
+<ul>
+<li><p>User hits logout.</p></li>
+
+<li><p>Service provider creates a digitally signed SAML LogoutRequest and returns it to the user’s browser.</p></li>
+
+<li><p>Browser sends request to IdP Single Logout URL which is appended with the LogoutRequest (base64 &amp; base64url encoded) in the query string.</p></li>
+
+<li><p>IdP identifies all other SSO sessions for user and iteratively generates SLOs for each service provider.</p></li>
+
+<li><p>After each service provider has successfully terminated its own session with the user, the IdP terminates its own session with the user and sends a LogoutResponse to the original service provider.</p></li>
+
+<li><p>User is logged out of IdP and all service providers.</p></li>
+</ul>
+
+<p>Using SLO to log out of the IdP and service provider simultaneously will mitigate the risk of orphaned SSO sessions and allow users to log out with (more) confidence.</p>
+
+<p>Comment on <a href="https://medium.com/@BoweiHan/elijd-single-sign-on-saml-and-single-logout-624efd5a224">Medium</a></p>
+
+
+        
+
+        
+      </article>
+
+      
+        <ul class="pager blog-pager">
+          
+          
+            <li class="next">
+              <a href="https://www.pushingthestack.com/devops/faas/" data-toggle="tooltip" data-placement="top" title="An Introduction to Serverless and FaaS (Functions as a Service)">Next Post &rarr;</a>
+            </li>
+          
+        </ul>
+      
+
+
+      
+
+    </div>
+  </div>
+</div>
+
+    <footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+          
+        </ul>
+        <p class="credits copyright text-muted">
+          
+
+          &nbsp;&bull;&nbsp;
+          2018
+
+          
+            &nbsp;&bull;&nbsp;
+            <a href="https://www.pushingthestack.com/">Pushing the Stack</a>
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js" integrity="sha384-/y1Nn9+QQAipbNQWU65krzJralCnuOasHncUFXGkdwntGeSvQicrYkiUBwsgUqc1" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/contrib/auto-render.min.js" integrity="sha384-dq1/gEHSxPZQ7DdrM82ID4YVol9BYyU7GbWlIwnwyPzotpoc57wDw/guX8EaYGPx" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://www.pushingthestack.com/js/main.js"></script><script> renderMathInElement(document.body); </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script>
+<script src="https://www.pushingthestack.com/js/load-photoswipe.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
+
